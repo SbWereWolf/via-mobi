@@ -10,8 +10,10 @@ class Application extends Singleton
 	{
 		$dirs = S('Request')->getDirs();
 
+        $ownController = '';
 		if( count($dirs) && (($dirs[0] == 'brand1') || ($dirs[0] == 'brand2')) )
 		{
+            $ownController = $dirs[0];
 			S('Config')->apply(array_shift($dirs));
 		}
 
@@ -19,7 +21,7 @@ class Application extends Singleton
 		{
 			$dirs[] = S('Config')->defaultClass;
 		}
-		$class = array_shift($dirs);
+        $class = array_shift($dirs);
 
 		if( !count($dirs) )
 		{
@@ -31,6 +33,10 @@ class Application extends Singleton
 		{
 			Response::headerForbidden();
 		}
+
+        if ($class === 'subscribe') {
+            $class = "$ownController$class";
+        }
 
 		$class = __NAMESPACE__ . '\\' . $this->_controllersdir . '\\' . $class;
 		$controller = new $class;
