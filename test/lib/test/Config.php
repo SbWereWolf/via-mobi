@@ -8,7 +8,9 @@ class Config extends Singleton
 	protected $_config = array();
 	protected $_name;
 
-	public function __construct()
+	private static $instance;
+
+	private function __construct()
 	{
 		$this->_use('default');
 	}
@@ -50,4 +52,14 @@ class Config extends Singleton
 			? array_merge($this->_config, include($filename))
 			: include($filename);
 	}
+
+    public static function getInstance()
+    {
+        if( !isset(self::$instance) )
+        {
+            self::$instance = new static();
+        }
+
+        return self::$instance;
+    }
 }
