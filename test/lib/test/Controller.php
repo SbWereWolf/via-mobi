@@ -77,7 +77,7 @@ class Controller
             $parts[$last] = $action;
             $target = implode(Loader::GLUE, $parts);
 
-            $result = Loader::isReadable($target);
+            $result = Loader::isAllowable($target);
         }
 
         return $result;

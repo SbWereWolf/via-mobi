@@ -17,7 +17,7 @@ class Loader
         require_once(self::toPath($class));
     }
 
-    public static function isReadable(string $class):bool
+    public static function isAllowable(string $class):bool
     {
         $result = is_readable(self::toPath($class));
 

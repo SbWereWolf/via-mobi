@@ -39,12 +39,17 @@ class Application extends Singleton
         }
 
 		$class = __NAMESPACE__ . '\\' . $this->_controllersdir . '\\' . $class;
-		$controller = new $class;
-		if( !method_exists($controller, $action) )
+        $isAllow = Loader::isAllowable($class);
+        if ($isAllow) {
+            $controller = new $class;
+            $isAllow = method_exists($controller, $action);
+        }
+        if (!$isAllow)
 		{
 			Response::headerNotFound();
 		}
-
-		call_user_func_array(array($controller, $action), $dirs);
+        if ($isAllow) {
+            call_user_func_array(array($controller, $action), $dirs);
+        }
 	}
 }
