@@ -13,14 +13,13 @@ class Controller
 		$this->req = S('Request');
 		$action = $this->req->getDir(0);
 
-		if( ($action == 'brand1') || ($action == 'brand2') )
-		{
-			$this->tpl->setGlob('baseurl', "/$action");
-		}
-		else
-		{
-			$this->tpl->setGlob('baseurl', '');
-		}
+        $isAction = $this->isAction($action);
+        if ($isAction) {
+            $this->tpl->setGlob('baseurl', '');
+        }
+        if (!$isAction) {
+            $this->tpl->setGlob('baseurl', "/$action");
+        }
 
 		session_start();
 
@@ -45,14 +44,42 @@ class Controller
 	private function _performChecks()
 	{
 		$action = S('Request')->getDir(0);
-        if ($action == 'brand1' || $action == 'brand2')
-		{
-			$action = S('Request')->getDir(1);
-		}
+
+        $isAction = $this->isAction($action);
+        if (!$isAction) {
+            $action = S('Request')->getDir(1);
+        }
 
 		if( !$this->_isSubscribed() && ($action != 'subscribe') )
 		{
 			Response::redirect('/subscribe');
 		}
 	}
+
+    /**
+     * Проверяем что есть соответствующий экшен
+     *
+     * @param $action
+     *
+     * @return bool
+     */
+    private function isAction($action): bool
+    {
+        $isEmpty = empty($action);
+        if ($isEmpty) {
+            $result = true;
+        }
+        if (!$isEmpty) {
+            $current = static::class;
+
+            $parts = explode(Loader::GLUE, $current);
+            $last = count($parts) - 1;
+            $parts[$last] = $action;
+            $target = implode(Loader::GLUE, $parts);
+
+            $result = Loader::isReadable($target);
+        }
+
+        return $result;
+    }
 }
